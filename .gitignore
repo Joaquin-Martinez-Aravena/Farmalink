@@ -42,3 +42,6 @@ htmlcov/
 .coverage.*
 .cache
 .pytest_cache/
+
+# === Documentación (ignorar README) ===
+README.md
