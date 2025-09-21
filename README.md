@@ -38,9 +38,10 @@ Implementación de un sistema de gestión de inventario para farmacia, con roles
 
 4. Configurar .env (basado en .env.example):
    DATABASE_URL=postgresql+asyncpg://USER:PASSWORD@HOST:5432/famalink
+
    SECRET_KEY=tu_clave_secreta
 
-5. Ejecutar scripts SQL en PgAdmin4 (Query Tool):
+6. Ejecutar scripts SQL en PgAdmin4 (Query Tool):
    \i sql/00_schema.sql
    \i sql/01_seed.sql
 
@@ -48,13 +49,13 @@ Implementación de un sistema de gestión de inventario para farmacia, con roles
    Si alguna es destructiva como DROP, DELETE o ALTER,
    se recomienda ejecutarla solo de forma manual y con cuidado).
 
-6. Levantar API:
+7. Levantar API:
    uvicorn app.main:app --reload --port 8000
 
-7. Probar en Swagger:
+8. Probar en Swagger:
    http://localhost:8000/docs
 
-8. Notas Importantes:
+9. Notas Importantes:
    El archivo consultas.json sirve para centralizar consultas SQL
    (SELECT, JOIN, etc.).
    Los INSERT, UPDATE, DELETE deberían manejarse por los endpoints
