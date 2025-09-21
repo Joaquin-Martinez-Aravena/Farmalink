@@ -1,0 +1,44 @@
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# === Entorno virtual ===
+.venv/
+env/
+venv/
+
+# === Archivos de configuración sensibles ===
+.env
+*.secret
+*.key
+
+# === Logs y temporales ===
+*.log
+*.sqlite3
+*.db
+*.bak
+*.dump
+*.backup
+
+# === Sistema operativo ===
+.DS_Store
+Thumbs.db
+
+# === VS Code ===
+.vscode/
+!.vscode/launch.json
+!.vscode/settings.json
+
+# === Carpeta personal (no versionar) ===
+posibles_mejoras/
+
+# === Cobertura y pruebas ===
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
