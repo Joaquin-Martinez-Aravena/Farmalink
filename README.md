@@ -25,37 +25,48 @@ Implementación de un sistema de gestión de inventario para farmacia, con roles
 
 ## Configuracion
 
-1. Clonar repo:
+**1. Clonar repo:**
+
    git clone https://github.com/tuusuario/farmalink-api.git
+
    cd farmalink-api
 
-2. Crear entorno virtual:
-   python -m venv .venv
-   source .venv/bin/activate # Windows: .venv\Scripts\activate
+**2. Crear entorno virtual:**
 
-3. Instalar dependencias:
+   python -m venv .venv
+
+   source .venv/bin/activate (# Windows: .venv\Scripts\activate)
+
+**3. Instalar dependencias:**
+
    pip install -r requirements.txt
 
-4. Configurar .env (basado en .env.example):
+**4. Configurar .env (basado en .env.example):**
+
    DATABASE_URL=postgresql+asyncpg://USER:PASSWORD@HOST:5432/famalink
 
    SECRET_KEY=tu_clave_secreta
 
-6. Ejecutar scripts SQL en PgAdmin4 (Query Tool):
+**5. Ejecutar scripts SQL en PgAdmin4 (Query Tool):**
+
    \i sql/00_schema.sql
+
    \i sql/01_seed.sql
 
    (El archivo 02_consultas.sql contiene ejemplos de consultas adicionales.
    Si alguna es destructiva como DROP, DELETE o ALTER,
    se recomienda ejecutarla solo de forma manual y con cuidado).
 
-7. Levantar API:
-   uvicorn app.main:app --reload --port 8000
+**6. Levantar API:**
 
-8. Probar en Swagger:
-   http://localhost:8000/docs
+      uvicorn app.main:app --reload --port 8000
 
-9. Notas Importantes:
+**7. Probar en Swagger:**
+
+    http://localhost:8000/docs
+
+**8. Notas Importantes:**
+
    El archivo consultas.json sirve para centralizar consultas SQL
    (SELECT, JOIN, etc.).
    Los INSERT, UPDATE, DELETE deberían manejarse por los endpoints
