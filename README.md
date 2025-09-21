@@ -1,4 +1,4 @@
-# FarmaLink API – Sistema de Inventario Farmaceutico
+# FarmaLink – Sistema de Inventario Farmaceutico
 
 Proyecto del ramo **Bases de Datos y Programacion Web**.  
 Implementación de un sistema de gestión de inventario para farmacia, con roles de **Administrador** y **Empleado**.
