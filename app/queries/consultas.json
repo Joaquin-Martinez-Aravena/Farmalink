@@ -1,0 +1,24 @@
+
+[
+  {
+    "key": "select_categorias",
+    "title": "SELECT - Listar categorías",
+    "type": "select",
+    "sql": "SELECT * FROM categoria",
+    "params": []
+  },
+  {
+    "key": "select_producto_categoria",
+    "title": "SELECT - Productos con su categoría (JOIN)",
+    "type": "select",
+    "sql": "SELECT p.nombre, c.nombre AS categoria FROM producto p JOIN categoria c ON c.id_categoria = p.id_categoria",
+    "params": []
+  },
+  {
+    "key": "select_compras_detalle",
+    "title": "SELECT - Compras con detalle y producto (JOIN)",
+    "type": "select",
+    "sql": "SELECT co.id_compra, co.fecha_compra, pr.nombre AS producto, d.cantidad, d.costo_unitario FROM compra co JOIN detalle_compra d ON d.id_compra = co.id_compra JOIN producto pr ON pr.id_producto = d.id_producto",
+    "params": []
+  }
+]
