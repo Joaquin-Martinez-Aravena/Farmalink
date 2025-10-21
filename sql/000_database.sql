@@ -10,6 +10,7 @@ BEGIN
    IF NOT FOUND THEN
       EXECUTE 'CREATE DATABASE famalink';
    END IF;
+   
 END$$;
 
 -- ============================

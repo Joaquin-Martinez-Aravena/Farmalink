@@ -19,9 +19,9 @@ async def run_sql_files():
 
     # Lista de archivos SQL a ejecutar
     ORDER = [
-        "00_database.sql",  # Crea la base de datos
-        "01_schema.sql",    # Crea las tablas
-        "02_consultas.sql", # Si tienes vistas o stored procedures, los agregas aquí
+        "000_database.sql",  # Crea la base de datos
+        "001_schema.sql",    # Crea las tablas
+        "002_consultas.sql", # Si tienes vistas o stored procedures, los agregas aquí
     ]
 
     # Ejecutar cada archivo SQL en el orden

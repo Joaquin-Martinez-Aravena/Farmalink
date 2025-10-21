@@ -6,19 +6,20 @@ from sqlalchemy.orm import declarative_base
 from typing import AsyncGenerator
 
 load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-# Usar SQLite con AioSQLite para operaciones asincrónicas
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./sql/famalink.db")
+# Railway Postgres suele requerir SSL. Si no viene en la URL, lo agregamos.
+if DATABASE_URL and "ssl=" not in DATABASE_URL:
+    sep = "&" if "?" in DATABASE_URL else "?"
+    DATABASE_URL = f"{DATABASE_URL}{sep}ssl=require"
 
-
-# Crear engine para la base de datos SQLite asincrónica
 engine = create_async_engine(
     DATABASE_URL,
     echo=False,
     future=True,
     pool_pre_ping=True,
     pool_recycle=1800,
-    pool_size=5,       # Ajusta esto si es necesario
+    pool_size=5,       # plan free/low tier: poco pool
     max_overflow=0,
 )
 
