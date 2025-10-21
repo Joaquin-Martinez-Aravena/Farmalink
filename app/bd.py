@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base
 from typing import AsyncGenerator
 
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./sql/famalink.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 # Railway Postgres suele requerir SSL. Si no viene en la URL, lo agregamos.
 if DATABASE_URL and "ssl=" not in DATABASE_URL:
