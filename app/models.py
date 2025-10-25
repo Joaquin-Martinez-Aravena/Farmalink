@@ -1,15 +1,14 @@
-
-# app/models.py
 from sqlalchemy import (
     BigInteger, Integer, String, Date, Numeric,
     ForeignKey, CheckConstraint, UniqueConstraint
 )
-from datetime import date, datetime
+from datetime import datetime
 from sqlalchemy.types import BigInteger, Integer, String, Date, DateTime, Numeric
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .bd import Base
 
+# Categoria
 class Categoria(Base):
     __tablename__ = "categoria"
     id_categoria: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)

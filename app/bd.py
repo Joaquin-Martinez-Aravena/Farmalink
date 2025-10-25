@@ -1,36 +1,38 @@
-# app/bd.py
 import os
 from dotenv import load_dotenv
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import declarative_base
-from typing import AsyncGenerator
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
+
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-# Railway Postgres suele requerir SSL. Si no viene en la URL, lo agregamos.
+# Conexión a PostgreSQL con SSL
 if DATABASE_URL and "ssl=" not in DATABASE_URL:
     sep = "&" if "?" in DATABASE_URL else "?"
     DATABASE_URL = f"{DATABASE_URL}{sep}ssl=require"
 
-engine = create_async_engine(
+# Motor sincrónico para PostgreSQL
+engine = create_engine(
     DATABASE_URL,
-    echo=False,
-    future=True,
-    pool_pre_ping=True,
-    pool_recycle=1800,
-    pool_size=5,       # plan free/low tier: poco pool
+    echo=True,  # Para ver las consultas SQL en consola (opcional)
+    pool_size=5,
     max_overflow=0,
 )
 
-AsyncSessionLocal = async_sessionmaker(
+# Crear la sesión
+SessionLocal = sessionmaker(
     bind=engine,
-    expire_on_commit=False,
-    class_=AsyncSession,
+    autocommit=False,
+    autoflush=False,
 )
 
 Base = declarative_base()
 
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
-        yield session
+# Dependencia para obtener la sesión
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

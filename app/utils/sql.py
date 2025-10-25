@@ -1,30 +1,28 @@
-
 # app/utils/sql.py
 
 from typing import Any, Dict, List, Optional
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, DBAPIError
 from fastapi import HTTPException
+from sqlalchemy.orm import Session  # Cambiar de AsyncSession a Session
 
-async def run_select(db: AsyncSession, sql: str, **params) -> List[Dict[str, Any]]:
-    rs = await db.execute(text(sql), params)
+def run_select(db: Session, sql: str, **params) -> List[Dict[str, Any]]:
+    rs = db.execute(text(sql), params)  # Eliminar await
     return [dict(r) for r in rs.mappings().all()]
 
-async def run_exec(db: AsyncSession, sql: str, **params) -> Dict[str, Any]:
+def run_exec(db: Session, sql: str, **params) -> Dict[str, Any]:
     try:
-        await db.execute(text(sql), params)
-        await db.commit()
+        db.execute(text(sql), params)  # Eliminar await
+        db.commit()  # Commit sincrónico
         return {"ok": True}
     except IntegrityError as e:
-        await db.rollback()
+        db.rollback()  # Rollback sincrónico
         raise HTTPException(status_code=409, detail=f"IntegrityError: {str(e.orig)}")
     except DBAPIError as e:
-        await db.rollback()
+        db.rollback()  # Rollback sincrónico
         raise HTTPException(status_code=400, detail=f"DBAPIError: {str(e.orig)}")
 
-async def run_scalar(db: AsyncSession, sql: str, **params) -> Optional[Any]:
-    rs = await db.execute(text(sql), params)
+def run_scalar(db: Session, sql: str, **params) -> Optional[Any]:
+    rs = db.execute(text(sql), params)  # Eliminar await
     row = rs.first()
     return row[0] if row else None
-

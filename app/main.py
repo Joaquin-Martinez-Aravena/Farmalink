@@ -1,11 +1,16 @@
 from fastapi import FastAPI
-from contextlib import asynccontextmanager
 import os
 from .bd_init import run_sql_files  # Asegúrate de tener esta función en bd_init.py
 from .routers import productos, proveedores, compras, lotes, alertas, consultas
 
 # Creación de la aplicación FastAPI
 app = FastAPI(title="FarmaLink API", version="0.1.0")
+
+@app.on_event("startup")
+def startup_event():
+    """Función para inicializar la base de datos al iniciar la aplicación."""
+    print("[DB-INIT] Iniciando la base de datos...")
+    run_sql_files()  # Esta función debe ser sincrónica ahora
 
 @app.get("/")
 def ping():

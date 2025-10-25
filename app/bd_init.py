@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
 from .bd import engine
 
 # Cargar las variables de entorno desde .env
@@ -12,7 +12,7 @@ SQL_DIR = os.getenv("SQL_DIR", "../sql")  # Carpeta que contiene los scripts SQL
 
 
 # Función para ejecutar los archivos SQL
-async def run_sql_files():
+def run_sql_files():
     base = Path(SQL_DIR)
     if not base.exists():
         print(f"[DB-INIT] Carpeta SQL no existe: {base.resolve()}")
@@ -25,7 +25,7 @@ async def run_sql_files():
     ]
 
     # Ejecutar cada archivo SQL en el orden
-    async with engine.begin() as conn:
+    with engine.connect() as conn:
         for file_name in ORDER:
             file_path = base / file_name
             if not file_path.exists():
@@ -33,10 +33,10 @@ async def run_sql_files():
                 continue
 
             print(f"[DB-INIT] Ejecutando el archivo {file_name}")
-            await _run_file(conn, file_path)
+            _run_file(conn, file_path)
 
 # Función auxiliar para ejecutar cada archivo SQL
-async def _run_file(conn, file_path: Path):
+def _run_file(conn, file_path: Path):
     # Leer el contenido del archivo SQL
     raw = file_path.read_text(encoding="utf-8")
     # Separar las sentencias SQL
@@ -44,6 +44,6 @@ async def _run_file(conn, file_path: Path):
 
     # Ejecutar cada sentencia SQL
     for stmt in statements:
-        await conn.execute(stmt)
+        conn.execute(text(stmt))
 
     print(f"[DB-INIT] {file_path.name} ejecutado correctamente.")
