@@ -8,7 +8,7 @@ from .bd import engine
 load_dotenv()
 
 # Obtener la dirección de los archivos SQL desde el archivo .env
-SQL_DIR = os.getenv("SQL_DIR", "../farmalink/sql")  # Carpeta que contiene los scripts SQL
+SQL_DIR = os.getenv("SQL_DIR", "../sql")  # Carpeta que contiene los scripts SQL
 
 # Función para ejecutar los archivos SQL
 async def run_sql_files():
