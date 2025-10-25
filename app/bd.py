@@ -7,10 +7,10 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-# Conexión a PostgreSQL con SSL
-if DATABASE_URL and "ssl=" not in DATABASE_URL:
+# Conexión a PostgreSQL con SSL - CORREGIDO
+if DATABASE_URL and "sslmode=" not in DATABASE_URL:
     sep = "&" if "?" in DATABASE_URL else "?"
-    DATABASE_URL = f"{DATABASE_URL}{sep}ssl=require"
+    DATABASE_URL = f"{DATABASE_URL}{sep}sslmode=require"
 
 # Motor sincrónico para PostgreSQL
 engine = create_engine(
