@@ -10,6 +10,7 @@ load_dotenv()
 # Obtener la dirección de los archivos SQL desde el archivo .env
 SQL_DIR = os.getenv("SQL_DIR", "../sql")  # Carpeta que contiene los scripts SQL
 
+
 # Función para ejecutar los archivos SQL
 async def run_sql_files():
     base = Path(SQL_DIR)
@@ -20,8 +21,7 @@ async def run_sql_files():
     # Lista de archivos SQL a ejecutar
     ORDER = [
         "000_database.sql",  # Crea la base de datos
-        "001_schema.sql",    # Crea las tablas
-        "002_consultas.sql", # Si tienes vistas o stored procedures, los agregas aquí
+        "002_seed.sql", # Si tienes vistas o stored procedures, los agregas aquí
     ]
 
     # Ejecutar cada archivo SQL en el orden

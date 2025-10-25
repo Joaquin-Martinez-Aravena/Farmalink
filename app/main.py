@@ -4,19 +4,8 @@ import os
 from .bd_init import run_sql_files  # Asegúrate de tener esta función en bd_init.py
 from .routers import productos, proveedores, compras, lotes, alertas, consultas
 
-# Añadimos el contexto para ejecutar las inicializaciones de base de datos
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    if os.getenv("RUN_DB_INIT", "true").lower() == "true":
-        try:
-            await run_sql_files()  # Ejecuta los archivos SQL al iniciar
-            print("[DB-INIT] SQL ejecutado correctamente.")
-        except Exception as e:
-            print(f"[DB-INIT] Aviso: {e}")
-    yield
-
 # Creación de la aplicación FastAPI
-app = FastAPI(title="FarmaLink API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="FarmaLink API", version="0.1.0")
 
 @app.get("/")
 def ping():
