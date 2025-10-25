@@ -6,3 +6,4 @@ SQLAlchemy>=2.0
 asyncpg
 python-dotenv
 alembic     # Para migrar la base de datos 
+psycopg2-binary  # Driver de PostgreSQL

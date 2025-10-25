@@ -10,7 +10,7 @@ r = APIRouter(prefix="/api/productos", tags=["Productos"])
 
 @r.get("/", response_model=list[ProductoOut])
 async def listar(search: str | None = None, categoria: int | None = None, estado: str | None = None,
-                 db: AsyncSession = Depends(get_session)):
+    db: AsyncSession = Depends(get_session)):
     stmt = select(Producto)
     if search:
         stmt = stmt.where((Producto.nombre.ilike(f"%{search}%")) | (Producto.cod_producto.ilike(f"%{search}%")))
