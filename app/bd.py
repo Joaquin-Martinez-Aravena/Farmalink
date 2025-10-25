@@ -1,35 +1,27 @@
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-# Conexión a PostgreSQL con SSL - CORREGIDO
-if DATABASE_URL and "sslmode=" not in DATABASE_URL:
-    sep = "&" if "?" in DATABASE_URL else "?"
-    DATABASE_URL = f"{DATABASE_URL}{sep}sslmode=require"
+# Si la URL de la base de datos contiene "ssl=require", la eliminamos
+if "ssl=require" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("ssl=require", "")
 
-# Motor sincrónico para PostgreSQL
-engine = create_engine(
-    DATABASE_URL,
-    echo=True,  # Para ver las consultas SQL en consola (opcional)
-    pool_size=5,
-    max_overflow=0,
-)
+# Crear el motor de conexión a la base de datos
+engine = create_engine(DATABASE_URL, echo=True)
 
-# Crear la sesión
-SessionLocal = sessionmaker(
-    bind=engine,
-    autocommit=False,
-    autoflush=False,
-)
+# Crear una sesión sincrónica
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Declarative base
 Base = declarative_base()
 
-# Dependencia para obtener la sesión
+# Función para obtener la sesión
 def get_db():
     db = SessionLocal()
     try:
