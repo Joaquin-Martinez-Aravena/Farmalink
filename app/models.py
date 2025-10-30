@@ -129,3 +129,14 @@ class AjusteLote(Base):
     created_at: Mapped[datetime] = mapped_column(
     DateTime(timezone=True), server_default=func.now(), nullable=False
 )
+
+class Empleado(Base):
+    __tablename__ = "empleados"
+    
+    id_empleado: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    nombre: Mapped[str] = mapped_column(String(100), nullable=False)
+    apellido: Mapped[str] = mapped_column(String(100), nullable=False)
+    rut: Mapped[str] = mapped_column(String(12), unique=True, nullable=False)
+    edad: Mapped[int] = mapped_column(Integer, nullable=False)
+    actividad: Mapped[str] = mapped_column(String(20), nullable=False
+)

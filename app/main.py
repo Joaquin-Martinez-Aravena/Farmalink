@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import os
 from .bd_init import run_sql_files  # Asegúrate de tener esta función en bd_init.py
-from .routers import productos, proveedores, compras, lotes, alertas, consultas
+from .routers import empleados, productos, proveedores, compras, lotes, alertas, consultas
 
 # Creación de la aplicación FastAPI
 app = FastAPI(title="FarmaLink API", version="0.1.0")
@@ -17,6 +17,7 @@ def ping():
     return {"ok": True, "name": "FarmaLink API"}
 
 # Incluyendo los routers
+app.include_router(empleados.r)
 app.include_router(productos.r)
 app.include_router(proveedores.r)
 app.include_router(compras.r)
