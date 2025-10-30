@@ -64,6 +64,16 @@ CREATE TABLE IF NOT EXISTS proveedor (
   email          VARCHAR(160)
 );
 
+-- Crear la tabla empleados
+CREATE TABLE IF NOT EXISTS empleados (
+  id_empleado BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  apellido VARCHAR(100) NOT NULL,
+  rut VARCHAR(12) UNIQUE NOT NULL,
+  edad INT NOT NULL CHECK (edad > 0),
+  actividad VARCHAR(20) CHECK (actividad IN ('disponible', 'en turno', 'en descanso')) NOT NULL
+);
+
 -- Producto
 CREATE TABLE IF NOT EXISTS producto (
   id_producto    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

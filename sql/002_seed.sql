@@ -28,3 +28,12 @@ VALUES (1, 1, 10, 5.00);
 
 INSERT INTO lote (id_producto, id_compra, fecha_venc, stock_lote)
 VALUES (1, 1, CURRENT_DATE + INTERVAL '6 months', 10);
+
+INSERT INTO empleados (nombre, apellido, rut, edad, actividad)
+VALUES
+    ('Juan', 'Pérez', '12345678-9', 30, 'disponible'),
+    ('María', 'López', '23456789-0', 28, 'en descanso'),
+    ('Carlos', 'García', '3457890-1', 35, 'en turno'),
+    ('Ana', 'Torres', '456/8901-2', 25, 'disponible'),
+    ('Luis', 'Martínez', '56789012-3', 40, 'en turno');
+-- Fin del archivo de seed
