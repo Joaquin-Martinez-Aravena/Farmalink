@@ -1,38 +1,20 @@
 import os
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, URL
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-load_dotenv()
+# URL de Render - FÓRZALA directamente para probar
+DATABASE_URL = "postgresql://farmalink_user:fGCNf8y4Ew28ftBAm8qn6dyql4TnmKxF@dpg-d3u4m73e5dus739d6dng-a.oregon-postgres.render.com/farmalink"
 
-# Obtener las variables de entorno
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "farmalink")
+# Si prefieres usar variable de entorno, pero con fallback
+# DATABASE_URL = os.environ.get('DATABASE_URL', "postgresql://farmalink_user:fGCNf8y4Ew28ftBAm8qn6dyql4TnmKxF@dpg-d3u4m73e5dus739d6dng-a.oregon-postgres.render.com/farmalink")
 
-# Construir la URL de conexión
-DATABASE_URL = URL.create(
-    "postgresql",
-    username=DB_USER,
-    password=DB_PASSWORD,
-    host=DB_HOST,
-    port=int(DB_PORT),
-    database=DB_NAME
-)
+print(f"Conectando a: {DATABASE_URL}")  # Para debug
 
-# Crear el motor de conexión a la base de datos
-engine = create_engine(DATABASE_URL, echo=True)
-
-# Crear una sesión sincrónica
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Declarative base
 Base = declarative_base()
 
-# Función para obtener la sesión
 def get_db():
     db = SessionLocal()
     try:
