@@ -6,3 +6,6 @@ SQLAlchemy>=2.0
 asyncpg
 python-dotenv
 psycopg2-binary  # Driver de PostgreSQL
+pymongo>=4.3   # Driver de MongoDB (incluye 'bson')
+dnspython>=2.2  # Necesario para URIs mongodb+srv (Atlas)
+motor           # Cliente async para MongoDB (opcional)
