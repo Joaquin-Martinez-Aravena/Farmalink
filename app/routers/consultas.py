@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from ..bd import get_db
 from ..utils.sql import run_select, run_exec
 
-r = APIRouter(prefix="/api/consultas", tags=["Consultas"])
+router = APIRouter(prefix="/api/consultas", tags=["Consultas"])
 
 QUERIES_PATH = Path(__file__).resolve().parents[1] / "queries" / "consultas.json"
 _catalogo: dict[str, dict] | None = None
@@ -41,7 +41,7 @@ def get_query(key: str) -> dict:
     return q
 
 
-@r.get("/", summary="Listar consultas disponibles")
+@router.get("/", summary="Listar consultas disponibles")  # Changed r to router
 def listar():
     if _catalogo is None:  # Verificamos si el catálogo es None
         load_catalog()  # Si lo es, cargamos el catálogo
@@ -54,7 +54,7 @@ class RunIn(BaseModel):
     key: str
     params: dict | None = None
 
-@r.post("/run", summary="Ejecutar consulta por clave")
+@router.post("/run", summary="Ejecutar consulta por clave")  # Changed r to router
 def run(body: RunIn, db: Session = Depends(get_db)):
     q = get_query(body.key)
     safe_params = {k: v for k, v in (body.params or {}).items() if k in q.get("params", [])}
@@ -66,7 +66,7 @@ def run(body: RunIn, db: Session = Depends(get_db)):
     else:
         raise HTTPException(400, "Tipo de consulta no soportado")
 
-@r.post("/reload", summary="Recargar catálogo (dev)")
+@router.post("/reload", summary="Recargar catálogo (dev)")  # Changed r to router
 def reload_catalog():
     load_catalog()
     return {"ok": True, "count": len(_catalogo or {})}

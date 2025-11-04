@@ -6,22 +6,22 @@ from ..models import Empleado
 from ..schemas.empleado import EmpleadoIn, EmpleadoOut
 from ..bd import get_db
 
-r = APIRouter(prefix="/api/empleados", tags=["Empleados"])
+router = APIRouter(prefix="/api/empleados", tags=["Empleados"])
 
-@r.get("/", response_model=list[EmpleadoOut])
+@router.get("/", response_model=list[EmpleadoOut])
 def listar_empleados(db: Session = Depends(get_db)):
     stmt = select(Empleado)
     result = db.execute(stmt)
     return result.scalars().all()
 
-@r.get("/{id_empleado}", response_model=EmpleadoOut)
+@router.get("/{id_empleado}", response_model=EmpleadoOut)
 def obtener_empleado(id_empleado: int, db: Session = Depends(get_db)):
     empleado = db.get(Empleado, id_empleado)
     if not empleado:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
     return empleado
 
-@r.post("/", response_model=EmpleadoOut, status_code=201)
+@router.post("/", response_model=EmpleadoOut, status_code=201)
 def crear_empleado(empleado: EmpleadoIn, db: Session = Depends(get_db)):
     # Verificar que no exista un empleado con el mismo rut
     existing_empleado = db.execute(select(Empleado).filter(Empleado.rut == empleado.rut))
@@ -35,7 +35,7 @@ def crear_empleado(empleado: EmpleadoIn, db: Session = Depends(get_db)):
     db.refresh(new_empleado)
     return new_empleado
 
-@r.put("/{id_empleado}", response_model=EmpleadoOut)
+@router.put("/{id_empleado}", response_model=EmpleadoOut)
 def actualizar_empleado(id_empleado: int, empleado: EmpleadoIn, db: Session = Depends(get_db)):
     existing_empleado = db.get(Empleado, id_empleado)
     if not existing_empleado:
@@ -48,7 +48,7 @@ def actualizar_empleado(id_empleado: int, empleado: EmpleadoIn, db: Session = De
     db.refresh(existing_empleado)
     return existing_empleado
 
-@r.delete("/{id_empleado}")
+@router.delete("/{id_empleado}")
 def borrar_empleado(id_empleado: int, db: Session = Depends(get_db)):
     empleado = db.get(Empleado, id_empleado)
     if not empleado:

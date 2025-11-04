@@ -5,9 +5,9 @@ from ..bd import get_db  # Cambié get_session por get_db
 from ..models import Producto
 from ..schemas.producto import ProductoIn, ProductoOut
 
-r = APIRouter(prefix="/api/productos", tags=["Productos"])
+router = APIRouter(prefix="/productos", tags=["Productos"])
 
-@r.get("/", response_model=list[ProductoOut])
+@router.get("/", response_model=list[ProductoOut])
 def listar(search: str | None = None, categoria: int | None = None, estado: str | None = None,
     db: Session = Depends(get_db)):  
     stmt = select(Producto)
@@ -20,15 +20,26 @@ def listar(search: str | None = None, categoria: int | None = None, estado: str 
     res = db.execute(stmt.order_by(Producto.nombre.asc()))
     return res.scalars().all()
 
-@r.post("/", response_model=ProductoOut, status_code=201)
-def crear(data: ProductoIn, db: Session = Depends(get_db)):  
-    obj = Producto(**data.model_dump())
+@router.post("/", response_model=ProductoOut, status_code=201)
+def crear(data: ProductoIn, db: Session = Depends(get_db)):
+    producto_dict = data.model_dump()
+    
+    # Generar código automático si no viene o viene vacío
+    if not producto_dict.get('cod_producto'):
+        # Contar productos existentes para generar el siguiente número
+        count = db.query(Producto).count()
+        # Generar código usando las primeras 3 letras del nombre + número
+        prefijo = data.nombre[:3].upper().replace(' ', '')
+        producto_dict['cod_producto'] = f"{prefijo}{count+1:04d}"
+        # Ejemplos: AMO0001, PAR0002, LOS0003, VIT0004
+    
+    obj = Producto(**producto_dict)
     db.add(obj)
     db.commit()
     db.refresh(obj)
     return obj
 
-@r.put("/{id_producto}", response_model=ProductoOut)
+@router.put("/{id_producto}", response_model=ProductoOut)
 def actualizar(id_producto: int, data: ProductoIn, db: Session = Depends(get_db)): 
     obj = db.get(Producto, id_producto)
     if not obj:
@@ -39,7 +50,7 @@ def actualizar(id_producto: int, data: ProductoIn, db: Session = Depends(get_db)
     db.refresh(obj)
     return obj
 
-@r.delete("/{id_producto}")
+@router.delete("/{id_producto}")
 def borrar(id_producto: int, db: Session = Depends(get_db)):  
     obj = db.get(Producto, id_producto)
     if not obj:

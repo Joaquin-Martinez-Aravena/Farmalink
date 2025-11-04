@@ -5,14 +5,14 @@ from ..bd import get_db  # Aquí cambiamos get_session por get_db
 from ..models import Lote, AjusteLote
 from ..schemas.lote import AjusteIn
 
-r = APIRouter(prefix="/api/lotes", tags=["Lotes"])
+router = APIRouter(prefix="/api/lotes", tags=["Lotes"])
 
-@r.get("/")
+@router.get("/")
 def listar(db: Session = Depends(get_db)):  
     res = db.query(Lote).order_by(Lote.fecha_venc.asc()).all()
     return res
 
-@r.post("/{id_lote}/ajustes")
+@router.post("/{id_lote}/ajustes")
 def ajustar(id_lote: int, data: AjusteIn, db: Session = Depends(get_db)):  
     lot = db.get(Lote, id_lote)
     if not lot:

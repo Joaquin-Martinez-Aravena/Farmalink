@@ -1,11 +1,12 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
 from dotenv import load_dotenv
 from sqlalchemy import text
 from .bd_init import run_sql_files
 from .mongodb import init_mongodb, close_mongodb
-from .routers import empleados, productos, proveedores, compras, lotes, alertas, consultas
+from .routers import empleados, productos, proveedores, compras, lotes, alertas, consultas, categorias
 
 # Cargar variables de entorno desde .env (si existe) lo antes posible
 load_dotenv()
@@ -23,6 +24,25 @@ app = FastAPI(
     version="0.2.0",
     description="Sistema de gestión farmacéutica con PostgreSQL y MongoDB"
 )
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite TODOS los orígenes temporalmente
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Incluir routers
+app.include_router(empleados.router, prefix="/api")
+app.include_router(productos.router)
+app.include_router(proveedores.router, prefix="/api")
+app.include_router(compras.router, prefix="/api")
+app.include_router(lotes.router, prefix="/api")
+app.include_router(alertas.router, prefix="/api")
+app.include_router(consultas.router, prefix="/api")
+app.include_router(categorias.router, prefix="/api")
 
 @app.on_event("startup")
 def startup_event():
@@ -102,11 +122,4 @@ def health_check():
     
     return status
 
-# Incluyendo los routers
-app.include_router(empleados.r)
-app.include_router(productos.r)
-app.include_router(proveedores.r)
-app.include_router(compras.r)
-app.include_router(lotes.r)
-app.include_router(consultas.r)
-app.include_router(alertas.r)
+# Los routers ya están incluidos arriba, no necesitamos incluirlos dos veces

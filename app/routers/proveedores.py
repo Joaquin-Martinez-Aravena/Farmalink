@@ -5,14 +5,14 @@ from ..bd import get_db  # Cambié get_session por get_db
 from ..models import Proveedor
 from ..schemas.proveedor import ProveedorIn, ProveedorOut
 
-r = APIRouter(prefix="/api/proveedores", tags=["Proveedores"])
+router = APIRouter(prefix="/api/proveedores", tags=["Proveedores"])
 
-@r.get("/", response_model=list[ProveedorOut])
+@router.get("/", response_model=list[ProveedorOut])
 def listar(db: Session = Depends(get_db)):  
     res = db.execute(select(Proveedor).order_by(Proveedor.razon_social.asc()))
     return res.scalars().all()
 
-@r.post("/", response_model=ProveedorOut, status_code=201)
+@router.post("/", response_model=ProveedorOut, status_code=201)
 def crear(data: ProveedorIn, db: Session = Depends(get_db)): 
     obj = Proveedor(**data.model_dump())
     db.add(obj)
@@ -20,8 +20,8 @@ def crear(data: ProveedorIn, db: Session = Depends(get_db)):
     db.refresh(obj)
     return obj
 
-@r.put("/{id_proveedor}", response_model=ProveedorOut)
-def actualizar(id_proveedor: int, data: ProveedorIn, db: Session = Depends(get_db)):  
+@router.put("/{id_proveedor}", response_model=ProveedorOut)
+def actualizar(id_proveedor: int, data: ProveedorIn, db: Session = Depends(get_db)):
     obj = db.get(Proveedor, id_proveedor)
     if not obj:
         raise HTTPException(404, "Proveedor no encontrado")
@@ -31,8 +31,8 @@ def actualizar(id_proveedor: int, data: ProveedorIn, db: Session = Depends(get_d
     db.refresh(obj)
     return obj
 
-@r.delete("/{id_proveedor}")
-def borrar(id_proveedor: int, db: Session = Depends(get_db)):  
+@router.delete("/{id_proveedor}")
+def borrar(id_proveedor: int, db: Session = Depends(get_db)):
     obj = db.get(Proveedor, id_proveedor)
     if not obj:
         raise HTTPException(404, "Proveedor no encontrado")

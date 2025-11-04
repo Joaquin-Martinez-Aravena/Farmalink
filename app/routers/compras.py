@@ -7,14 +7,14 @@ from ..models import Compra, DetalleCompra, Lote, Proveedor, Producto
 from ..schemas.compra import CompraIn, CompraOut
 from datetime import date
 
-r = APIRouter(prefix="/api/compras", tags=["Compras"])
+router = APIRouter(prefix="/api/compras", tags=["Compras"])
 
-@r.get("/")
+@router.get("/")
 def listar(db: Session = Depends(get_db)):  # Cambiar a Session
     rows = db.execute(Compra.__table__.select().order_by(Compra.id_compra.desc()))  # Eliminar await
     return [dict(r) for r in rows.mappings().all()]
 
-@r.post("/", response_model=CompraOut, status_code=201)
+@router.post("/", response_model=CompraOut, status_code=201)
 def crear(payload: CompraIn, db: Session = Depends(get_db)):  # Cambiar a Session
     # Validación del proveedor
     if not db.get(Proveedor, payload.id_proveedor):

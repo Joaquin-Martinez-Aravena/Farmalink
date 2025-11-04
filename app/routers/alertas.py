@@ -6,10 +6,10 @@ from sqlalchemy import text
 from ..bd import get_db
 from ..utils.sql import run_select
 
-r = APIRouter(prefix="/alertas", tags=["Alertas"])
+router = APIRouter(prefix="/alertas", tags=["Alertas"])
 
 
-@r.get("/stock-bajo")
+@router.get("/stock-bajo")
 def stock_bajo(db: Session = Depends(get_db)):
     """
     Obtiene productos con stock bajo según el umbral definido
@@ -27,7 +27,7 @@ def stock_bajo(db: Session = Depends(get_db)):
     )
 
 
-@r.get("/por-vencer")
+@router.get("/por-vencer")
 def por_vencer(db: Session = Depends(get_db)):
     """
     Obtiene lotes que están por vencer (próximos 30-60 días típicamente)
@@ -44,7 +44,7 @@ def por_vencer(db: Session = Depends(get_db)):
     )
 
 
-@r.get("/vencidos")
+@router.get("/vencidos")
 def vencidos(db: Session = Depends(get_db)):
     """
     Obtiene lotes que ya están vencidos
@@ -61,7 +61,7 @@ def vencidos(db: Session = Depends(get_db)):
     )
 
 
-@r.get("/resumen")
+@router.get("/resumen")
 def resumen_alertas(db: Session = Depends(get_db)):
     """
     Obtiene un resumen de todas las alertas activas
