@@ -1,47 +1,26 @@
-
-# === Python ===
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
-
-# === Entorno virtual ===
-.venv/
-env/
-venv/
-
-# === Archivos de configuración sensibles ===
-.env
-*.secret
-*.key
-
-# === Logs y temporales ===
-*.log
-*.sqlite3
-*.db
-*.bak
-*.dump
-*.backup
-
-# === Sistema operativo ===
+# ---- OS / Misc ----
 .DS_Store
 Thumbs.db
+*.log
+*.zip
 
-# === VS Code ===
+# ---- Entornos ----
+.env
+.env.*.local
+*.env
+*.local
+
+# ---- Editores ----
 .vscode/
-!.vscode/launch.json
-!.vscode/settings.json
+.idea/
 
-# === Carpeta personal (no versionar) ===
-posibles_mejoras/
+# ---- Node/Vite (dentro de front/) ----
+front/node_modules/
+front/dist/
+front/.vite/
+front/.parcel-cache/
+front/coverage/
 
-# === Cobertura y pruebas ===
-htmlcov/
-.coverage
-.coverage.*
-.cache
-.pytest_cache/
-
-# === Documentación (ignorar README) ===
-README.md
+# ---- Tests ----
+front/.nyc_output/
+front/junit.xml
