@@ -37,7 +37,7 @@ def get_database():
     if mongo_db is None:
         global mongo_client
         # Cliente creado bajo demanda
-        mongo_client = MongoClient(MONGODB_URL)
+        mongo_client = MongoClient(MONGODB_URL,tls = True)
         mongo_db = mongo_client[DB_NAME]
     return mongo_db
 
