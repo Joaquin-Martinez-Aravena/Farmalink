@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 from .bd_init import run_sql_files
 from .mongodb import init_mongodb, close_mongodb
-from .routers import empleados, productos, proveedores, compras, lotes, alertas, consultas, categorias
+from .routers import empleados, productos, proveedores, compras, lotes, alertas, consultas, categorias, alertasmongo
 
 # Cargar variables de entorno desde .env (si existe) lo antes posible
 load_dotenv()
@@ -43,6 +43,7 @@ app.include_router(lotes.router, prefix="/api")
 app.include_router(alertas.router, prefix="/api")
 app.include_router(consultas.router, prefix="/api")
 app.include_router(categorias.router, prefix="/api")
+app.include_router(alertasmongo.router, prefix="/api")
 
 @app.on_event("startup")
 def startup_event():
@@ -122,4 +123,3 @@ def health_check():
     
     return status
 
-# Los routers ya están incluidos arriba, no necesitamos incluirlos dos veces

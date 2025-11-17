@@ -8,6 +8,8 @@ from typing import Optional, Dict, Any, List
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 import logging
+from fastapi import APIRouter
+from app.mongodb import crear_alerta
 
 logger = logging.getLogger(__name__)
 
@@ -151,37 +153,90 @@ def registrar_auditoria(
 
 
 # ===========================================
-# FUNCIONES HELPER PARA ALERTAS
+# FUNCIONES HELPER PARA LOG DE ALERTAS
 # ===========================================
+
+def registrar_log_alerta(
+    mensaje: str,
+    tipo: str = "INFO",
+    producto: Optional[str] = None,
+    lote: Optional[str] = None,
+    categoria: Optional[str] = None,
+    detalles: Optional[str] = None,
+) -> Optional[str]:
+    """Registra una entrada en la colección logs_alertas (historial)."""
+    try:
+        db = get_database()
+
+        doc = {
+            "mensaje": mensaje,
+            "tipo": tipo,          # VENCIMIENTO / INGRESO_LOTE / STOCK / INFO
+            "fecha": datetime.now()
+        }
+
+        if producto:
+            doc["producto"] = producto
+        if lote:
+            doc["lote"] = lote
+        if categoria:
+            doc["categoria"] = categoria
+        if detalles:
+            doc["detalles"] = detalles
+
+        result = db.logs_alertas.insert_one(doc)
+        logger.info(f"🧾 Log de alerta registrado: {mensaje}")
+        return str(result.inserted_id)
+
+    except Exception as e:
+        logger.error(f"❌ Error al registrar log de alerta: {e}")
+        return None
+    
 
 def crear_alerta(
     tipo: str,
     prioridad: str,
     mensaje: str,
-    detalles: Dict[str, Any]
+    detalles: Dict[str, Any],
 ) -> Optional[str]:
-    """Crea una nueva alerta (Síncrono)"""
+    """
+    Versión simple: solo guarda en logs_alertas como historial.
+    """
     try:
-        db = get_database()
-        
-        alerta = {
-            "tipo": tipo,
-            "prioridad": prioridad,
-            "mensaje": mensaje,
-            "detalles": detalles,
-            "fecha_creacion": datetime.now(),
-            "fecha_vista": None,
-            "fecha_resuelta": None,
-            "estado": "PENDIENTE"
-        }
-        
-        result = db.alertas.insert_one(alerta)
+        alerta_id = registrar_log_alerta(
+            mensaje=mensaje,
+            tipo=tipo,
+            producto=detalles.get("producto"),
+            lote=detalles.get("lote"),
+            categoria=detalles.get("categoria"),
+            detalles=detalles.get("descripcion"),
+        )
+
         logger.info(f"🚨 Alerta creada: {tipo} - {prioridad}")
-        return str(result.inserted_id)
-        
+        return alerta_id
+
     except Exception as e:
         logger.error(f"❌ Error al crear alerta: {e}")
         return None
+
+
+router = APIRouter(prefix="/alertas", tags=["Alertas"])
+
+@router.post("/")
+
+def crear_alerta_endpoint(body: dict):
+    """
+    Crea una alerta desde el frontend.
+    El body podría traer tipo, prioridad, mensaje y detalles.
+    """
+    alerta_id = crear_alerta(
+        tipo=body["tipo"],
+        prioridad=body["prioridad"],
+        mensaje=body["mensaje"],
+        detalles=body.get("detalles", {}),
+    )
+    return {"id": alerta_id}
+
+
 
 
 def obtener_alertas_pendientes(limite: int = 50) -> List[Dict]:
