@@ -2,10 +2,10 @@
 from fastapi import APIRouter
 from typing import Dict, Any
 
-from ..mongobd import crear_alerta   # 👈 import relativo, importante
+from ..mongobd import crear_alerta   
 
 router = APIRouter(
-    prefix="/alertas-mongo",         # 👈 para no chocar con tu router alertas.py
+    prefix="/alertas-mongo",         
     tags=["Alertas Mongo"]
 )
 

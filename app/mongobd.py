@@ -8,8 +8,6 @@ from typing import Optional, Dict, Any, List
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 import logging
-from fastapi import APIRouter
-from app.mongodb import crear_alerta
 
 logger = logging.getLogger(__name__)
 
@@ -217,27 +215,6 @@ def crear_alerta(
     except Exception as e:
         logger.error(f"❌ Error al crear alerta: {e}")
         return None
-
-
-router = APIRouter(prefix="/alertas", tags=["Alertas"])
-
-@router.post("/")
-
-def crear_alerta_endpoint(body: dict):
-    """
-    Crea una alerta desde el frontend.
-    El body podría traer tipo, prioridad, mensaje y detalles.
-    """
-    alerta_id = crear_alerta(
-        tipo=body["tipo"],
-        prioridad=body["prioridad"],
-        mensaje=body["mensaje"],
-        detalles=body.get("detalles", {}),
-    )
-    return {"id": alerta_id}
-
-
-
 
 def obtener_alertas_pendientes(limite: int = 50) -> List[Dict]:
     """Obtiene las alertas pendientes (Síncrono)"""
