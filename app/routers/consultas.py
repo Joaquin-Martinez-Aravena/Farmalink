@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from ..bd import get_db
 from ..utils.sql import run_select, run_exec
 
-router = APIRouter(prefix="/api/consultas", tags=["Consultas"])
+router = APIRouter(prefix="/consultas", tags=["Consultas"])
 
 QUERIES_PATH = Path(__file__).resolve().parents[1] / "queries" / "consultas.json"
 _catalogo: dict[str, dict] | None = None

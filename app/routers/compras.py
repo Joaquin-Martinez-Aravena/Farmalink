@@ -7,7 +7,7 @@ from ..models import Compra, DetalleCompra, Lote, Proveedor, Producto
 from ..schemas.compra import CompraIn, CompraOut
 from datetime import date
 
-router = APIRouter(prefix="/api/compras", tags=["Compras"])
+router = APIRouter(prefix="/compras", tags=["Compras"])
 
 @router.get("/")
 def listar(db: Session = Depends(get_db)):  # Cambiar a Session

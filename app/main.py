@@ -36,7 +36,7 @@ app.add_middleware(
 
 # Incluir routers
 app.include_router(empleados.router, prefix="/api")
-app.include_router(productos.router)
+app.include_router(productos.router, prefix="/api")
 app.include_router(proveedores.router, prefix="/api")
 app.include_router(compras.router, prefix="/api")
 app.include_router(lotes.router, prefix="/api")

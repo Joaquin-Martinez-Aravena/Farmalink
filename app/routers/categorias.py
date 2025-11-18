@@ -4,7 +4,7 @@ from sqlalchemy import select
 from ..bd import get_db
 from ..models import Categoria
 
-router = APIRouter(prefix="/api/categorias", tags=["Categorías"])
+router = APIRouter(prefix="/categorias", tags=["Categorías"])
 
 @router.get("/")
 def listar(db: Session = Depends(get_db)):

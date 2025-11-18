@@ -5,7 +5,7 @@ from ..bd import get_db  # Aquí cambiamos get_session por get_db
 from ..models import Lote, AjusteLote
 from ..schemas.lote import AjusteIn
 
-router = APIRouter(prefix="/api/lotes", tags=["Lotes"])
+router = APIRouter(prefix="/lotes", tags=["Lotes"])
 
 @router.get("/")
 def listar(db: Session = Depends(get_db)):  

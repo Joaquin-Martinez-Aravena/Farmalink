@@ -5,7 +5,7 @@ from ..bd import get_db  # Cambié get_session por get_db
 from ..models import Proveedor
 from ..schemas.proveedor import ProveedorIn, ProveedorOut
 
-router = APIRouter(prefix="/api/proveedores", tags=["Proveedores"])
+router = APIRouter(prefix="/proveedores", tags=["Proveedores"])
 
 @router.get("/", response_model=list[ProveedorOut])
 def listar(db: Session = Depends(get_db)):  
