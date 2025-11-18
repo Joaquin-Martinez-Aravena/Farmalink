@@ -66,6 +66,7 @@ def send_purchase_email(compra, proveedor, detalles):
     msg["Subject"] = asunto
     msg["From"] = SMTP_USER
     msg["To"] = PURCHASE_NOTIFY_EMAIL
+    msg["Cc"] = "joaquin.martinezaravena07@gmail.com"
     msg.set_content(cuerpo)
 
     context = ssl.create_default_context()
