@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["Alertas Mongo"]
 )
 
-@router.get("/")
+@router.post("/")
 def crear_alerta_endpoint(body: Dict[str, Any]):
     """
     Crea una alerta desde el frontend.
