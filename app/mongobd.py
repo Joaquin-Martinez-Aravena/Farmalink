@@ -293,6 +293,30 @@ def resolver_alerta(
         logger.error(f"❌ Error al resolver alerta: {e}")
 
 
+def obtener_logs_alerta(limite: int = 50) -> List[Dict[str, Any]]:
+    """
+    Obtiene el historial reciente de logs de alertas.
+    """
+    try:
+        db = get_database()
+        cursor = (
+            db.logs_alertas
+              .find({})
+              .sort("fecha", -1)
+              .limit(limite)
+        )
+
+        logs = []
+        for doc in cursor:
+            doc["_id"] = str(doc["_id"])
+            logs.append(doc)
+
+        return logs
+
+    except Exception as e:
+        logger.error(f"❌ Error al obtener logs de alertas: {e}")
+        return []
+
 # ===========================================
 # FUNCIONES HELPER PARA CONFIGURACIONES
 # ===========================================
