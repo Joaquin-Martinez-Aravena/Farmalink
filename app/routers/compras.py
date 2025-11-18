@@ -1,19 +1,19 @@
 # app/routers/compras.py
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from sqlalchemy.orm import Session  # Cambiar de AsyncSession a Session
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session  # Usamos Session normal
 from datetime import date
 
-from ..bd import get_db  # Usamos get_db en lugar de get_session
+from ..bd import get_db
 from ..models import Compra, DetalleCompra, Lote, Proveedor, Producto
 from ..schemas.compra import CompraIn, CompraOut
-from ..core.email_service import send_purchase_email  
+from ..core.email_service import send_purchase_email
 
 router = APIRouter(prefix="/compras", tags=["Compras"])
 
 
 @router.get("/")
-def listar(db: Session = Depends(get_db)):  # Cambiar a Session
+def listar(db: Session = Depends(get_db)):
     rows = db.execute(Compra.__table__.select().order_by(Compra.id_compra.desc()))
     return [dict(r) for r in rows.mappings().all()]
 
@@ -21,8 +21,7 @@ def listar(db: Session = Depends(get_db)):  # Cambiar a Session
 @router.post("/", response_model=CompraOut, status_code=201)
 def crear(
     payload: CompraIn,
-    background_tasks: BackgroundTasks,       
-    db: Session = Depends(get_db),           # Cambiar a Session
+    db: Session = Depends(get_db),
 ):
     # Validación del proveedor
     proveedor = db.get(Proveedor, payload.id_proveedor)
@@ -37,7 +36,7 @@ def crear(
         id_usuario_registra=payload.id_usuario_registra,
     )
     db.add(compra)
-    db.flush()  # Confirmar los cambios en la base de datos para tener id_compra
+    db.flush()  # Para tener compra.id_compra
 
     # Para usar en el correo
     detalles_email = []
@@ -86,19 +85,15 @@ def crear(
 
     # Actualizar el total de la compra
     compra.total = total
-    db.commit()          # Confirmar transacción
-    db.refresh(compra)   # Refrescar el objeto para obtener los datos actualizados
+    db.commit()
+    db.refresh(compra)
 
-    # Enviar correo en segundo plano (para no retrasar la respuesta al front)
+    # 🚨 Enviar correo directamente (SIN BackgroundTasks) para depurar
     try:
-        background_tasks.add_task(
-            send_purchase_email,
-            compra,
-            proveedor,
-            detalles_email,
-        )
+        print("➡️ Antes de llamar a send_purchase_email()")
+        send_purchase_email(compra, proveedor, detalles_email)
+        print("✅ send_purchase_email() terminó sin excepción")
     except Exception as e:
-        # No tiramos abajo la compra si falla el correo, solo lo registramos
-        print("❌ Error al programar envío de correo:", e)
+        print("❌ Error al enviar correo:", repr(e))
 
     return compra

@@ -13,25 +13,19 @@ SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASS = os.getenv("SMTP_PASS")
 PURCHASE_NOTIFY_EMAIL = os.getenv(
     "PURCHASE_NOTIFY_EMAIL",
-    "joaquin.martinezaravena07@gmail.com",
+    "veraalonso846@gmail.com",
 )
 
-
 def send_purchase_email(compra, proveedor, detalles):
-    """
-    Envia un correo con el detalle de una compra.
-
-    compra   -> objeto Compra (id_compra, fecha_compra, total, etc.)
-    proveedor -> objeto Proveedor
-    detalles -> lista de dicts:
-                {nombre, cantidad, costo_unitario, subtotal, fecha_venc}
-    """
+    print("➡️ Entrando a send_purchase_email()")  # 👈 LOG CLAVE
+    print("   SMTP_USER:", SMTP_USER)
+    print("   SMTP_HOST:", SMTP_HOST)
+    print("   SMTP_PORT:", SMTP_PORT)
 
     if not SMTP_USER or not SMTP_PASS:
         print("⚠️ SMTP no configurado, se omite envío de correo.")
         return
 
-    # Intentamos obtener un nombre legible del proveedor
     proveedor_nombre = (
         getattr(proveedor, "nombre", None)
         or getattr(proveedor, "razon_social", None)
@@ -51,14 +45,13 @@ def send_purchase_email(compra, proveedor, detalles):
     ]
 
     for d in detalles:
-        linea = (
+        lineas.append(
             f" - {d['nombre']} | "
             f"Cantidad: {d['cantidad']} | "
             f"Precio unitario: ${d['costo_unitario']:,.0f} | "
             f"Subtotal: ${d['subtotal']:,.0f} | "
             f"Vence: {d['fecha_venc']}"
         )
-        lineas.append(linea)
 
     cuerpo = "\n".join(lineas)
 
@@ -69,10 +62,12 @@ def send_purchase_email(compra, proveedor, detalles):
     msg["Cc"] = "joaquin.martinezaravena07@gmail.com"
     msg.set_content(cuerpo)
 
+    print("➡️ Intentando conectar a SMTP...")
+
     context = ssl.create_default_context()
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
         server.starttls(context=context)
-        server.login(SMTP_USER, SMTP_PASS)
+        server.login(SMTP_USER, SMTP_PASS)  
         server.send_message(msg)
 
     print("📧 Correo de compra enviado con éxito.")
