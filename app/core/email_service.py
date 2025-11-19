@@ -4,9 +4,8 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
-
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_PORT = int(os.getenv("SMTP_PORT", "465"))  # Cambiar a 465
 SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASS = os.getenv("SMTP_PASS")
 PURCHASE_NOTIFY_EMAIL = os.getenv("PURCHASE_NOTIFY_EMAIL", "veraalonso846@gmail.com")
@@ -23,12 +22,9 @@ def send_purchase_email(compra, proveedor, detalles):
     print("=" * 60)
 
     if not SMTP_USER or not SMTP_PASS:
-        print("⚠️ SMTP no configurado correctamente:")
-        print(f"   - SMTP_USER existe: {bool(SMTP_USER)}")
-        print(f"   - SMTP_PASS existe: {bool(SMTP_PASS)}")
+        print("⚠️ SMTP no configurado correctamente")
         raise ValueError("Faltan credenciales SMTP")
 
-    # Construir el nombre del proveedor
     proveedor_nombre = (
         getattr(proveedor, "nombre", None)
         or getattr(proveedor, "razon_social", None)
@@ -69,18 +65,14 @@ def send_purchase_email(compra, proveedor, detalles):
     print(f"   Subject: {asunto}")
     print(f"   From: {SMTP_USER}")
     print(f"   To: {PURCHASE_NOTIFY_EMAIL}")
-    print(f"   Longitud del cuerpo: {len(cuerpo)} caracteres")
 
     try:
-        print("➡️ Conectando a SMTP...")
+        print("➡️ Conectando a SMTP con SSL (puerto 465)...")
         context = ssl.create_default_context()
         
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as server:
-            print("✓ Conexión establecida")
-            
-            print("➡️ Iniciando STARTTLS...")
-            server.starttls(context=context)
-            print("✓ STARTTLS completado")
+        # 🔥 CAMBIO CLAVE: Usar SMTP_SSL en lugar de SMTP + starttls
+        with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=context, timeout=30) as server:
+            print("✓ Conexión SSL establecida")
             
             print("➡️ Iniciando login...")
             server.login(SMTP_USER, SMTP_PASS)
@@ -91,15 +83,15 @@ def send_purchase_email(compra, proveedor, detalles):
             print("✓ Mensaje enviado")
 
         print("=" * 60)
-        print("✅ Correo de compra enviado con éxito")
+        print("✅ Correo enviado con éxito")
         print("=" * 60)
         
     except smtplib.SMTPAuthenticationError as e:
         print(f"❌ Error de autenticación SMTP: {e}")
-        print("   Verifica que SMTP_PASS sea una App Password válida")
         raise
-    except smtplib.SMTPException as e:
-        print(f"❌ Error SMTP: {e}")
+    except OSError as e:
+        print(f"❌ Error de red: {e}")
+        print("   Posible bloqueo de puerto por Render")
         raise
     except Exception as e:
         print(f"❌ Error inesperado: {type(e).__name__}: {e}")
