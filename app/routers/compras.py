@@ -97,3 +97,16 @@ def crear(
         print("❌ Error al enviar correo:", repr(e))
 
     return compra
+
+@router.get("/debug-env")
+def debug_env():
+    """Endpoint temporal para verificar variables de entorno"""
+    import os
+    return {
+        "SMTP_USER_exists": bool(os.getenv("SMTP_USER")),
+        "SMTP_USER_value": os.getenv("SMTP_USER", "NOT_SET")[:5] + "..." if os.getenv("SMTP_USER") else "NOT_SET",
+        "SMTP_PASS_exists": bool(os.getenv("SMTP_PASS")),
+        "SMTP_HOST": os.getenv("SMTP_HOST", "NOT_SET"),
+        "SMTP_PORT": os.getenv("SMTP_PORT", "NOT_SET"),
+        "PURCHASE_NOTIFY_EMAIL": os.getenv("PURCHASE_NOTIFY_EMAIL", "NOT_SET"),
+    }
