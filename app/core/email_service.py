@@ -4,7 +4,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Cc
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-PURCHASE_NOTIFY_EMAIL = os.getenv("PURCHASE_NOTIFY_EMAIL", "veraalonso846@gmail.com")
+PURCHASE_NOTIFY_EMAIL = os.getenv("PURCHASE_NOTIFY_EMAIL", "joqui02.martinezaravena@gmail.com")
 FROM_EMAIL = os.getenv("SMTP_USER", "joaquin.martinezaravena07@gmail.com")
 
 def send_purchase_email(compra, proveedor, detalles):
