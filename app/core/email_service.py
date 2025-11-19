@@ -11,21 +11,26 @@ SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASS = os.getenv("SMTP_PASS")
-PURCHASE_NOTIFY_EMAIL = os.getenv(
-    "PURCHASE_NOTIFY_EMAIL",
-    "veraalonso846@gmail.com",
-)
+PURCHASE_NOTIFY_EMAIL = os.getenv("PURCHASE_NOTIFY_EMAIL", "veraalonso846@gmail.com")
 
 def send_purchase_email(compra, proveedor, detalles):
-    print("➡️ Entrando a send_purchase_email()")  # 👈 LOG CLAVE
-    print("   SMTP_USER:", SMTP_USER)
-    print("   SMTP_HOST:", SMTP_HOST)
-    print("   SMTP_PORT:", SMTP_PORT)
+    print("=" * 60)
+    print("➡️ Entrando a send_purchase_email()")
+    print(f"   SMTP_USER: {SMTP_USER}")
+    print(f"   SMTP_PASS configurado: {'Sí' if SMTP_PASS else 'NO'}")
+    print(f"   SMTP_HOST: {SMTP_HOST}")
+    print(f"   SMTP_PORT: {SMTP_PORT}")
+    print(f"   Destinatario: {PURCHASE_NOTIFY_EMAIL}")
+    print(f"   ID Compra: {compra.id_compra}")
+    print("=" * 60)
 
     if not SMTP_USER or not SMTP_PASS:
-        print("⚠️ SMTP no configurado, se omite envío de correo.")
-        return
+        print("⚠️ SMTP no configurado correctamente:")
+        print(f"   - SMTP_USER existe: {bool(SMTP_USER)}")
+        print(f"   - SMTP_PASS existe: {bool(SMTP_PASS)}")
+        raise ValueError("Faltan credenciales SMTP")
 
+    # Construir el nombre del proveedor
     proveedor_nombre = (
         getattr(proveedor, "nombre", None)
         or getattr(proveedor, "razon_social", None)
@@ -62,12 +67,42 @@ def send_purchase_email(compra, proveedor, detalles):
     msg["Cc"] = "joaquin.martinezaravena07@gmail.com"
     msg.set_content(cuerpo)
 
-    print("➡️ Intentando conectar a SMTP...")
+    print("📧 Mensaje construido:")
+    print(f"   Subject: {asunto}")
+    print(f"   From: {SMTP_USER}")
+    print(f"   To: {PURCHASE_NOTIFY_EMAIL}")
+    print(f"   Longitud del cuerpo: {len(cuerpo)} caracteres")
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-        server.starttls(context=context)
-        server.login(SMTP_USER, SMTP_PASS)  
-        server.send_message(msg)
+    try:
+        print("➡️ Conectando a SMTP...")
+        context = ssl.create_default_context()
+        
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as server:
+            print("✓ Conexión establecida")
+            
+            print("➡️ Iniciando STARTTLS...")
+            server.starttls(context=context)
+            print("✓ STARTTLS completado")
+            
+            print("➡️ Iniciando login...")
+            server.login(SMTP_USER, SMTP_PASS)
+            print("✓ Login exitoso")
+            
+            print("➡️ Enviando mensaje...")
+            server.send_message(msg)
+            print("✓ Mensaje enviado")
 
-    print("📧 Correo de compra enviado con éxito.")
+        print("=" * 60)
+        print("✅ Correo de compra enviado con éxito")
+        print("=" * 60)
+        
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"❌ Error de autenticación SMTP: {e}")
+        print("   Verifica que SMTP_PASS sea una App Password válida")
+        raise
+    except smtplib.SMTPException as e:
+        print(f"❌ Error SMTP: {e}")
+        raise
+    except Exception as e:
+        print(f"❌ Error inesperado: {type(e).__name__}: {e}")
+        raise
