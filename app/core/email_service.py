@@ -1,30 +1,26 @@
 # app/core/email_service.py
 import os
-import smtplib
-import ssl
-from email.message import EmailMessage
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Cc
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "465"))  # Cambiar a 465
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASS = os.getenv("SMTP_PASS")
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 PURCHASE_NOTIFY_EMAIL = os.getenv("PURCHASE_NOTIFY_EMAIL", "veraalonso846@gmail.com")
+FROM_EMAIL = os.getenv("SMTP_USER", "joaquin.martinezaravena07@gmail.com")
 
 def send_purchase_email(compra, proveedor, detalles):
     print("=" * 60)
-    print("➡️ Entrando a send_purchase_email()")
-    print(f"   SMTP_USER: {SMTP_USER}")
-    print(f"   SMTP_PASS configurado: {'Sí' if SMTP_PASS else 'NO'}")
-    print(f"   SMTP_HOST: {SMTP_HOST}")
-    print(f"   SMTP_PORT: {SMTP_PORT}")
-    print(f"   Destinatario: {PURCHASE_NOTIFY_EMAIL}")
+    print("➡️ Entrando a send_purchase_email() con SendGrid")
+    print(f"   SendGrid API Key configurada: {'Sí' if SENDGRID_API_KEY else 'NO'}")
+    print(f"   From: {FROM_EMAIL}")
+    print(f"   To: {PURCHASE_NOTIFY_EMAIL}")
     print(f"   ID Compra: {compra.id_compra}")
     print("=" * 60)
 
-    if not SMTP_USER or not SMTP_PASS:
-        print("⚠️ SMTP no configurado correctamente")
-        raise ValueError("Faltan credenciales SMTP")
+    if not SENDGRID_API_KEY:
+        print("⚠️ SENDGRID_API_KEY no configurada")
+        raise ValueError("Falta configurar SENDGRID_API_KEY")
 
+    # Construir nombre del proveedor
     proveedor_nombre = (
         getattr(proveedor, "nombre", None)
         or getattr(proveedor, "razon_social", None)
@@ -33,6 +29,7 @@ def send_purchase_email(compra, proveedor, detalles):
 
     asunto = f"[FarmaLink] Nueva compra #{compra.id_compra} - {proveedor_nombre}"
 
+    # Construir cuerpo del email
     lineas = [
         "Se ha registrado una nueva compra en FarmaLink.",
         "",
@@ -54,45 +51,38 @@ def send_purchase_email(compra, proveedor, detalles):
 
     cuerpo = "\n".join(lineas)
 
-    msg = EmailMessage()
-    msg["Subject"] = asunto
-    msg["From"] = SMTP_USER
-    msg["To"] = PURCHASE_NOTIFY_EMAIL
-    msg["Cc"] = "joaquin.martinezaravena07@gmail.com"
-    msg.set_content(cuerpo)
-
     print("📧 Mensaje construido:")
     print(f"   Subject: {asunto}")
-    print(f"   From: {SMTP_USER}")
-    print(f"   To: {PURCHASE_NOTIFY_EMAIL}")
+    print(f"   Longitud del cuerpo: {len(cuerpo)} caracteres")
 
     try:
-        print("➡️ Conectando a SMTP con SSL (puerto 465)...")
-        context = ssl.create_default_context()
+        # Crear el mensaje
+        message = Mail(
+            from_email=FROM_EMAIL,
+            to_emails=PURCHASE_NOTIFY_EMAIL,
+            subject=asunto,
+            plain_text_content=cuerpo
+        )
         
-        # 🔥 CAMBIO CLAVE: Usar SMTP_SSL en lugar de SMTP + starttls
-        with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=context, timeout=30) as server:
-            print("✓ Conexión SSL establecida")
-            
-            print("➡️ Iniciando login...")
-            server.login(SMTP_USER, SMTP_PASS)
-            print("✓ Login exitoso")
-            
-            print("➡️ Enviando mensaje...")
-            server.send_message(msg)
-            print("✓ Mensaje enviado")
-
-        print("=" * 60)
-        print("✅ Correo enviado con éxito")
+        # Agregar CC
+        message.add_cc(Cc("joaquin.martinezaravena07@gmail.com"))
+        
+        print("➡️ Enviando email con SendGrid...")
+        
+        # Enviar
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        
+        print(f"✅ Email enviado exitosamente")
+        print(f"   Status Code: {response.status_code}")
+        print(f"   Response Body: {response.body}")
         print("=" * 60)
         
-    except smtplib.SMTPAuthenticationError as e:
-        print(f"❌ Error de autenticación SMTP: {e}")
-        raise
-    except OSError as e:
-        print(f"❌ Error de red: {e}")
-        print("   Posible bloqueo de puerto por Render")
-        raise
+        return True
+        
     except Exception as e:
-        print(f"❌ Error inesperado: {type(e).__name__}: {e}")
+        print(f"❌ Error al enviar email con SendGrid:")
+        print(f"   Tipo: {type(e).__name__}")
+        print(f"   Mensaje: {str(e)}")
+        print("=" * 60)
         raise
