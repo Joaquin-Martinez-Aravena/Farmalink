@@ -4,7 +4,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Cc
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-PURCHASE_NOTIFY_EMAIL = os.getenv("PURCHASE_NOTIFY_EMAIL", "joaquin.martinezaravena07@gmail.com")
+PURCHASE_NOTIFY_EMAIL = os.getenv("PURCHASE_NOTIFY_EMAIL", "veraalonso846@gmail.com")
 FROM_EMAIL = os.getenv("SMTP_USER", "joaquin.martinezaravena07@gmail.com")
 
 def send_purchase_email(compra, proveedor, detalles):
@@ -13,6 +13,7 @@ def send_purchase_email(compra, proveedor, detalles):
     print(f"   SendGrid API Key configurada: {'Sí' if SENDGRID_API_KEY else 'NO'}")
     print(f"   From: {FROM_EMAIL}")
     print(f"   To: {PURCHASE_NOTIFY_EMAIL}")
+    print(f"   CC: joaquin.martinezaravena07@gmail.com")
     print(f"   ID Compra: {compra.id_compra}")
     print("=" * 60)
 
@@ -20,7 +21,6 @@ def send_purchase_email(compra, proveedor, detalles):
         print("⚠️ SENDGRID_API_KEY no configurada")
         raise ValueError("Falta configurar SENDGRID_API_KEY")
 
-    # Construir nombre del proveedor
     proveedor_nombre = (
         getattr(proveedor, "nombre", None)
         or getattr(proveedor, "razon_social", None)
@@ -29,7 +29,6 @@ def send_purchase_email(compra, proveedor, detalles):
 
     asunto = f"[FarmaLink] Nueva compra #{compra.id_compra} - {proveedor_nombre}"
 
-    # Construir cuerpo del email
     lineas = [
         "Se ha registrado una nueva compra en FarmaLink.",
         "",
@@ -56,7 +55,6 @@ def send_purchase_email(compra, proveedor, detalles):
     print(f"   Longitud del cuerpo: {len(cuerpo)} caracteres")
 
     try:
-        # Crear el mensaje
         message = Mail(
             from_email=FROM_EMAIL,
             to_emails=PURCHASE_NOTIFY_EMAIL,
@@ -64,12 +62,11 @@ def send_purchase_email(compra, proveedor, detalles):
             plain_text_content=cuerpo
         )
         
-        # Agregar CC
+        # 🔥 Agregar tu email en copia
         message.add_cc(Cc("joaquin.martinezaravena07@gmail.com"))
         
         print("➡️ Enviando email con SendGrid...")
         
-        # Enviar
         sg = SendGridAPIClient(SENDGRID_API_KEY)
         response = sg.send(message)
         
