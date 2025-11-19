@@ -3,9 +3,7 @@ import os
 import smtplib
 import ssl
 from email.message import EmailMessage
-from dotenv import load_dotenv
 
-load_dotenv()
 
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
