@@ -75,7 +75,6 @@ def send_purchase_email(compra, proveedor, detalles):
         
         print(f"✅ Email enviado exitosamente")
         print(f"   Status Code: {response.status_code}")
-        print(f"   Response Body: {response.body}")
         print("=" * 60)
         
         return True
